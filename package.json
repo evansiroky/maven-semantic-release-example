@@ -1,0 +1,8 @@
+{
+  "name": "maven-semantic-release-example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Evan Siroky <evan.siroky@yahoo.com>",
+  "license": "MIT",
+  "private": false
+}
