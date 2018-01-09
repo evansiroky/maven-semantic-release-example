@@ -1,27 +1,18 @@
-language: java
-
-# This library uses Java 8 features and Travis doesn't (yet) support OpenJDK 8
-jdk:
-  - oraclejdk8
-
-# Replace Travis's default Maven installation step with a no-op.
-# This avoids redundantly pre-running 'mvn install -DskipTests' every time.
-install:
-  - yarn
-
-# Replace Travis's default build step.
-# Run all Maven phases at once up through verify, install, and deploy.
-script:
-  - mvn package
-
+# run a node.js script to use code from semantic-release
 after_success:
   - node release.js
-
-# If sudo is disabled, CI runs on container based infrastructure (allows caching &c.)
-sudo: false
-
-# Retain the local Maven repository to speed up builds.
 cache:
   directories:
-    - "$HOME/.m2/repository"
-    - "$HOME/.yarn-cache"
+    - $HOME/.m2/repository
+    - $HOME/.yarn-cache
+# yarn is used to run to release script which runs part of the node.js semantic-release library
+install:
+  - yarn
+jdk:
+  - oraclejdk8
+language: java
+notifications:
+  email: false
+script:
+  - mvn package
+sudo: false

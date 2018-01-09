@@ -4,5 +4,12 @@
   "main": "index.js",
   "author": "Evan Siroky <evan.siroky@yahoo.com>",
   "license": "MIT",
-  "private": false
+  "private": false,
+  "dependencies": {
+    "env-ci": "^1.2.0",
+    "semantic-release": "^11.0.2"
+  },
+  "devDependencies": {
+    "mastarm": "^4.1.0"
+  }
 }
