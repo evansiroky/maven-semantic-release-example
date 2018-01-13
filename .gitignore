@@ -17,3 +17,6 @@ buildNumber.properties
 
 ### npm
 node_modules/
+
+### secrets
+config.json

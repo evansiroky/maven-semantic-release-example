@@ -1,0 +1,63 @@
+const fs = require('fs-extra')
+const got = require('got')
+const SemanticReleaseError = require('@semantic-release/error')
+const getVersionHead = require('@semantic-release/npm/lib/get-version-head')
+const xml2js = require('xml2js-es6-promise')
+
+/* eslint-disable complexity */
+/**
+ * Get the last release of the maven repository
+ */
+module.exports = async function getLastRelease (cfg, {logger}) {
+  // get package name from pom.xml
+  const pomXmlFilePath = './pom.xml'
+  const stats = await fs.stat('./pom.xml')
+
+  if (!stats) {
+    throw new SemanticReleaseError('pom.xml file is missing!')
+  }
+
+  let pomXml
+  try {
+    const pomContents = await fs.readFile(pomXmlFilePath, 'utf8')
+    pomXml = await xml2js(pomContents)
+  } catch (e) {
+    throw new SemanticReleaseError('Error reading pom.xml')
+  }
+
+  if (
+    !pomXml ||
+    !pomXml.project ||
+    !pomXml.project.groupId ||
+    pomXml.project.groupId.length === 0 ||
+    !pomXml.project.artifactId ||
+    pomXml.project.artifactId.length === 0
+  ) {
+    throw new SemanticReleaseError('pom.xml is missing groupId or artifactId')
+  }
+
+  const searchTerm = `${pomXml.project.groupId[0]}.${pomXml.project.artifactId[0]}`
+
+  // get the last semver version from published repo
+  const mavenJson = await got(
+    `https://search.maven.org/solrsearch/select?q=${searchTerm}&rows=20&wt=json`,
+    { json: true }
+  )
+
+  if (
+    !mavenJson ||
+    !mavenJson.response ||
+    !mavenJson.response.docs ||
+    mavenJson.response.docs.length === 0
+  ) {
+    logger.log('No version found of package %s found on %s', searchTerm, 'maven central')
+    return
+  }
+
+  // (dangerously) assume first doc is the one we're looking for
+  const version = mavenJson.response.docs[0].latestVersion
+
+  // get the sha from the git release of said version
+  const gitHead = await getVersionHead(version)
+  return {gitHead, version}
+}

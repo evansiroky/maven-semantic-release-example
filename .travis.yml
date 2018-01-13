@@ -1,6 +1,6 @@
 # run a node.js script to use code from semantic-release
 after_success:
-  - node release.js
+  - node release-cli.js
 cache:
   directories:
     - $HOME/.m2/repository
