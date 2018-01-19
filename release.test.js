@@ -9,8 +9,10 @@ async function testRelease () {
     process.env[key] = config[key]
   })
   await release({
-    dryRun: true,
+    branch: 'dev',
+    dryRun: false,
     getLastRelease: ['./get-last-release'],
+    publish: ['./publish'],
     verifyConditions: ['@semantic-release/github', '@semantic-release/condition-travis']
   })
 }

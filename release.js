@@ -5,10 +5,13 @@
 
 require('debug').enable('semantic-release:*')
 const envCi = require('env-ci')
+const marked = require('marked')
+const TerminalRenderer = require('marked-terminal')
 const getCommits = require('semantic-release/lib/get-commits')
 const getConfig = require('semantic-release/lib/get-config')
 const {gitHead: getGitHead, isGitRepo} = require('semantic-release/lib/git')
 const logger = require('semantic-release/lib/logger')
+const getNextVersion = require('semantic-release/lib/get-next-version')
 
 /* eslint-disable complexity */
 /**
