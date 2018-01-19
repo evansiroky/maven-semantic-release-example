@@ -7,6 +7,16 @@
   <version>1.0-SNAPSHOT</version> <!-- semantic-release-version-line -->
   <name>maven-semantic-release-example</name>
   <url>http://maven.apache.org</url>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
