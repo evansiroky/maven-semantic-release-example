@@ -1,16 +1,16 @@
 const execa = require('execa')
 const fs = require('fs-extra')
 const SemanticReleaseError = require('@semantic-release/error')
-
-const config = require('./config.json')
+const semanticGithub = require('@semantic-release/github')
+const {gitHead: getGitHead} = require('semantic-release/lib/git')
 
 module.exports = publish
 
-publish({}, {options: {}, logger: console, nextRelease: { version: '1.0.0' } })
+async function publish (pluginConfig, publishConfig) {
+  const {options, logger, lastRelease, commits, nextRelease} = publishConfig
 
-async function publish (pluginConfig, {options, logger, lastRelease, commits, nextRelease}) {
   // configure git to allow pushing
-  await configureGit(logger)
+  await configureGit(options.repositoryUrl, logger)
 
   // set and commit version number in pom.xml
   await commitVersionInPomXml(nextRelease.version, logger)
@@ -18,24 +18,32 @@ async function publish (pluginConfig, {options, logger, lastRelease, commits, ne
   // publish to maven
   logger.log('Deploying version %s with maven', nextRelease.version);
   try {
-    const shell = await execa('mvn', ['deploy']);
+    const shell = await execa('mvn', ['deploy', '--settings', 'maven-settings.xml']);
     process.stdout.write(shell.stdout);
   } catch (e) {
+    logger.error(e)
+  }
+
+  if (e) {
     throw new SemanticReleaseError('failed to deploy to maven')
   }
+
+  // tag and create a release on github
+  nextRelease.gitHead = await getGitHead()
+  // await semanticGithub.publish(pluginConfig, publishConfig)
 
   // update version to next snapshot version
   const nextSnapshotVersion = nextRelease.version.split('.').map(s => parseInt(s, 10))
   nextSnapshotVersion[2] += 1
-  await commitVersionInPomXml(`${nextSnapshotVersion.join('.')}-SNAPSHOT`, logger)
 
   // make a commit bumping to snapshot version
+  await commitVersionInPomXml(`${nextSnapshotVersion.join('.')}-SNAPSHOT`, logger)
 }
 
 /**
  * Configure git settings.  Copied from this guide: https://gist.github.com/willprice/e07efd73fb7f13f917ea
  */
-async function configureGit (logger) {
+async function configureGit (repositoryUrl, logger) {
   let shell = await execa(
     'git',
     ['config', '--global', 'user.email', '"travis@travis-ci.org"']
@@ -53,7 +61,7 @@ async function configureGit (logger) {
         'remote',
         'add',
         'origin',
-        `https://${config.GH_TOKEN}@github.com/evansiroky/resources.git`
+        repositoryUrl.replace('https://github', `https://${process.env.GH_TOKEN}@github`)
       ]
     )
     process.stdout.write(shell.stdout)
