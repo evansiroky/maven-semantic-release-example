@@ -1,6 +1,24 @@
-const release = require('./release')
+const semanticRelease = require('semantic-release/cli')
 
-release({
-  getLastRelease: ['./get-last-release'],
-  verifyConditions: ['@semantic-release/github', '@semantic-release/condition-travis']
-})
+/**
+ * Add necessary arguments to run semantic release for maven projects
+ */
+async function run () {
+  process.argv.push(...[
+    '--get-last-release',
+    './get-last-release',
+    '--publish',
+    './publish',
+    '--verify-conditions',
+    '@semantic-release/github,@semantic-release/condition-travis'
+  ])
+
+  await semanticRelease()
+}
+
+// allow invocation using node command
+if (require.main === module) {
+  run()
+}
+
+module.exports = run
