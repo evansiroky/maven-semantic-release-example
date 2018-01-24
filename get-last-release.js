@@ -44,20 +44,19 @@ module.exports = async function getLastRelease (cfg, {logger}) {
     { json: true }
   )
 
-  logger.log(mavenJson)
-
   if (
     !mavenJson ||
-    !mavenJson.response ||
-    !mavenJson.response.docs ||
-    mavenJson.response.docs.length === 0
+    !mavenJson.body ||
+    !mavenJson.body.response ||
+    !mavenJson.body.response.docs ||
+    mavenJson.body.response.docs.length === 0
   ) {
     logger.log('No version found of package %s found on %s', searchTerm, 'maven central')
     return
   }
 
   // (dangerously) assume first doc is the one we're looking for
-  const version = mavenJson.response.docs[0].latestVersion
+  const version = mavenJson.body.response.docs[0].latestVersion
 
   // get the sha from the git release of said version
   const gitHead = await getVersionHead(version)
