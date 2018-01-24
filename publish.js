@@ -1,5 +1,6 @@
 const execa = require('execa')
 const fs = require('fs-extra')
+const getStream = require('get-stream')
 const semanticGithub = require('@semantic-release/github')
 const {gitHead: getGitHead} = require('semantic-release/lib/git')
 
@@ -24,8 +25,7 @@ async function publish (pluginConfig, publishConfig) {
   logger.log('Deploying version %s with maven', nextRelease.version)
   let e
   try {
-    const shell = await execa('mvn', ['deploy', '--settings', 'maven-settings.xml'])
-    shell.stdout.pipe(process.stdout)
+    await exec('mvn', ['deploy', '--settings', 'maven-settings.xml'])
   } catch (e) {
     logger.error(e)
   }
@@ -50,18 +50,16 @@ async function publish (pluginConfig, publishConfig) {
  * Configure git settings.  Copied from this guide: https://gist.github.com/willprice/e07efd73fb7f13f917ea
  */
 async function configureGit (repositoryUrl, logger) {
-  let shell = await execa(
+  await exec(
     'git',
     ['config', '--global', 'user.email', '"travis@travis-ci.org"']
   )
-  shell.stdout.pipe(process.stdout)
-  shell = await execa(
+  await exec(
     'git',
     ['config', '--global', 'user.name', '"Travis CI"']
   )
-  shell.stdout.pipe(process.stdout)
   try {
-    shell = await execa(
+    await exec(
       'git',
       [
         'remote',
@@ -70,12 +68,20 @@ async function configureGit (repositoryUrl, logger) {
         repositoryUrl.replace('https://github', `https://${process.env.GH_TOKEN}@github`)
       ]
     )
-    shell.stdout.pipe(process.stdout)
   } catch (e) {
     if (!(e.message.indexOf('remote origin already exists') > -1)) {
       throw e
     }
   }
+}
+
+/**
+ * Execute while streaming to stdout in realtime
+ */
+async function exec (args) {
+  const stream = execa(...args).stdout
+  stream.pipe(process.stdout)
+  return getStream(stream)
 }
 
 /**
@@ -108,16 +114,13 @@ async function commitVersionInPomXml (versionStr, logger) {
     : `${versionStr} [ci skip]`
 
   logger.log('adding pom.xml to a commmit')
-  let shell = await execa('git', ['add', 'pom.xml'])
-  shell.stdout.pipe(process.stdout)
+  await exec('git', ['add', 'pom.xml'])
 
   logger.log('committing changes')
-  shell = await execa('git', ['commit', '-m', commitMessage])
-  shell.stdout.pipe(process.stdout)
+  await exec('git', ['commit', '-m', commitMessage])
   process.stdout.write('\n')
 
   // logger.log('pushing changes')
-  // shell = await execa('git', ['push'])
-  // shell.stdout.pipe(process.stdout)
+  // await exec('git', ['push'])
   // process.stdout.write('\n')
 }

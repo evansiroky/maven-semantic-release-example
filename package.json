@@ -8,6 +8,7 @@
   "dependencies": {
     "env-ci": "^1.2.0",
     "fs-extra": "^5.0.0",
+    "get-stream": "^3.0.0",
     "got": "^8.0.1",
     "semantic-release": "^11.0.2",
     "xml2js-es6-promise": "^1.1.1"

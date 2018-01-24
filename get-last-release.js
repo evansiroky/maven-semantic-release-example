@@ -38,10 +38,13 @@ module.exports = async function getLastRelease (cfg, {logger}) {
   const searchTerm = `${pomXml.project.groupId[0]}.${pomXml.project.artifactId[0]}`
 
   // get the last semver version from published repo
+  logger.log('searching maven for term %s', searchTerm)
   const mavenJson = await got(
     `https://search.maven.org/solrsearch/select?q=${searchTerm}&rows=20&wt=json`,
     { json: true }
   )
+
+  logger.log(mavenJson)
 
   if (
     !mavenJson ||
