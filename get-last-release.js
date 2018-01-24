@@ -1,6 +1,5 @@
 const fs = require('fs-extra')
 const got = require('got')
-const SemanticReleaseError = require('@semantic-release/error')
 const getVersionHead = require('@semantic-release/npm/lib/get-version-head')
 const xml2js = require('xml2js-es6-promise')
 
@@ -14,7 +13,7 @@ module.exports = async function getLastRelease (cfg, {logger}) {
   const stats = await fs.stat('./pom.xml')
 
   if (!stats) {
-    throw new SemanticReleaseError('pom.xml file is missing!')
+    throw new Error('pom.xml file is missing!')
   }
 
   let pomXml
@@ -22,7 +21,7 @@ module.exports = async function getLastRelease (cfg, {logger}) {
     const pomContents = await fs.readFile(pomXmlFilePath, 'utf8')
     pomXml = await xml2js(pomContents)
   } catch (e) {
-    throw new SemanticReleaseError('Error reading pom.xml')
+    throw new Error('Error reading pom.xml')
   }
 
   if (
@@ -33,7 +32,7 @@ module.exports = async function getLastRelease (cfg, {logger}) {
     !pomXml.project.artifactId ||
     pomXml.project.artifactId.length === 0
   ) {
-    throw new SemanticReleaseError('pom.xml is missing groupId or artifactId')
+    throw new Error('pom.xml is missing groupId or artifactId')
   }
 
   const searchTerm = `${pomXml.project.groupId[0]}.${pomXml.project.artifactId[0]}`

@@ -1,13 +1,19 @@
 const execa = require('execa')
 const fs = require('fs-extra')
-const SemanticReleaseError = require('@semantic-release/error')
 const semanticGithub = require('@semantic-release/github')
 const {gitHead: getGitHead} = require('semantic-release/lib/git')
 
 module.exports = publish
 
+/**
+ * Publish repo to maven
+ * 1. configure git by setting the remote if it hasn't been already
+ * 2. Commit the new version number to pom.xml
+ * 3. Perform the release using the mvn command
+ * 4. Make another commit updating to the next snapshot version
+ */
 async function publish (pluginConfig, publishConfig) {
-  const {options, logger, lastRelease, commits, nextRelease} = publishConfig
+  const {options, logger, nextRelease} = publishConfig
 
   // configure git to allow pushing
   await configureGit(options.repositoryUrl, logger)
@@ -15,17 +21,17 @@ async function publish (pluginConfig, publishConfig) {
   // set and commit version number in pom.xml
   await commitVersionInPomXml(nextRelease.version, logger)
 
-  // publish to maven
-  logger.log('Deploying version %s with maven', nextRelease.version);
+  logger.log('Deploying version %s with maven', nextRelease.version)
+  let e
   try {
-    const shell = await execa('mvn', ['deploy', '--settings', 'maven-settings.xml']);
-    process.stdout.write(shell.stdout);
+    const shell = await execa('mvn', ['deploy', '--settings', 'maven-settings.xml'])
+    shell.stdout.pipe(process.stdout)
   } catch (e) {
     logger.error(e)
   }
 
   if (e) {
-    throw new SemanticReleaseError('failed to deploy to maven')
+    throw new Error('failed to deploy to maven')
   }
 
   // tag and create a release on github
@@ -48,12 +54,12 @@ async function configureGit (repositoryUrl, logger) {
     'git',
     ['config', '--global', 'user.email', '"travis@travis-ci.org"']
   )
-  process.stdout.write(shell.stdout)
+  shell.stdout.pipe(process.stdout)
   shell = await execa(
     'git',
     ['config', '--global', 'user.name', '"Travis CI"']
   )
-  process.stdout.write(shell.stdout)
+  shell.stdout.pipe(process.stdout)
   try {
     shell = await execa(
       'git',
@@ -64,7 +70,7 @@ async function configureGit (repositoryUrl, logger) {
         repositoryUrl.replace('https://github', `https://${process.env.GH_TOKEN}@github`)
       ]
     )
-    process.stdout.write(shell.stdout)
+    shell.stdout.pipe(process.stdout)
   } catch (e) {
     if (!(e.message.indexOf('remote origin already exists') > -1)) {
       throw e
@@ -72,13 +78,16 @@ async function configureGit (repositoryUrl, logger) {
   }
 }
 
+/**
+ * Change the pom.xml file, commit the change and then push it to the repo
+ */
 async function commitVersionInPomXml (versionStr, logger) {
   let pomLines
   try {
     pomLines = (await fs.readFile('./pom.xml', 'utf8')).split('\n')
   } catch (e) {
     logger.error(e)
-    throw new SemanticReleaseError('Error reading pom.xml')
+    throw new Error('Error reading pom.xml')
   }
 
   // manually iterate through lines and make edits to
@@ -95,17 +104,20 @@ async function commitVersionInPomXml (versionStr, logger) {
   await fs.writeFile('./pom.xml', pomLines.join('\n'))
 
   const commitMessage = versionStr.indexOf('SNAPSHOT') > -1
-    ? `Prepare next development iteration ${versionStr}`
-    : versionStr
+    ? `Prepare next development iteration ${versionStr} [ci skip]`
+    : `${versionStr} [ci skip]`
 
   logger.log('adding pom.xml to a commmit')
   let shell = await execa('git', ['add', 'pom.xml'])
-  process.stdout.write(shell.stdout)
+  shell.stdout.pipe(process.stdout)
 
   logger.log('committing changes')
   shell = await execa('git', ['commit', '-m', commitMessage])
-  process.stdout.write(shell.stdout)
+  shell.stdout.pipe(process.stdout)
   process.stdout.write('\n')
 
-  logger.log('changes committed')
+  // logger.log('pushing changes')
+  // shell = await execa('git', ['push'])
+  // shell.stdout.pipe(process.stdout)
+  // process.stdout.write('\n')
 }
