@@ -37,7 +37,7 @@ async function publish (pluginConfig, publishConfig) {
 
   // tag and create a release on github
   nextRelease.gitHead = await getGitHead()
-  // await semanticGithub.publish(pluginConfig, publishConfig)
+  await semanticGithub.publish(pluginConfig, publishConfig)
 
   // update version to next snapshot version
   const nextSnapshotVersion = nextRelease.version.split('.').map(s => parseInt(s, 10))
@@ -121,7 +121,7 @@ async function commitVersionInPomXml (versionStr) {
   await exec('git', ['commit', '-m', commitMessage])
   process.stdout.write('\n')
 
-  // debug('pushing changes')
-  // await exec('git', ['push'])
-  // process.stdout.write('\n')
+  debug('pushing changes')
+  await exec('git', ['push'])
+  process.stdout.write('\n')
 }
