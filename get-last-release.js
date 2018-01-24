@@ -1,8 +1,12 @@
-const debug = require('debug')('maven-semantic-release:get-last-release')
+const DEBUG = require('debug')
+const debug = DEBUG('maven-semantic-release:get-last-release')
 const fs = require('fs-extra')
 const got = require('got')
 const getVersionHead = require('@semantic-release/npm/lib/get-version-head')
 const xml2js = require('xml2js-es6-promise')
+
+// we need to override the debugs that were enabled in semantic release
+DEBUG.enable('semantic-release:*,maven-semantic-release:*')
 
 /* eslint-disable complexity */
 /**

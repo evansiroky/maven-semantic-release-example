@@ -10,7 +10,8 @@ async function testRelease () {
   })
   process.argv.push(...[
     '--branch',
-    'dev'
+    'dev',
+    '--debug'
   ])
   await release()
 }
