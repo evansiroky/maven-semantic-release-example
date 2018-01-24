@@ -1,3 +1,10 @@
 {
-  "GH_TOKEN": "test"
+  "CI": "true",
+  "GH_TOKEN": "test",
+  "GPG_KEY_NAME": "test",
+  "GPG_PASSPHRASE": "test",
+  "OSSRH_JIRA_USERNAME": "test",
+  "OSSRH_JIRA_PASSWORD": "test",
+  "TRAVIS": "true",
+  "TRAVIS_BRANCH": "dev"
 }
