@@ -1,3 +1,4 @@
+const debug = require('debug')('maven-semantic-release:publish')
 const execa = require('execa')
 const fs = require('fs-extra')
 const getStream = require('get-stream')
@@ -14,20 +15,20 @@ module.exports = publish
  * 4. Make another commit updating to the next snapshot version
  */
 async function publish (pluginConfig, publishConfig) {
-  const {options, logger, nextRelease} = publishConfig
+  const {options, nextRelease} = publishConfig
 
   // configure git to allow pushing
-  await configureGit(options.repositoryUrl, logger)
+  await configureGit(options.repositoryUrl)
 
   // set and commit version number in pom.xml
-  await commitVersionInPomXml(nextRelease.version, logger)
+  await commitVersionInPomXml(nextRelease.version)
 
-  logger.log('Deploying version %s with maven', nextRelease.version)
+  debug('Deploying version %s with maven', nextRelease.version)
   let e
   try {
     await exec('mvn', ['deploy', '--settings', 'maven-settings.xml'])
   } catch (e) {
-    logger.error(e)
+    debug(e)
   }
 
   if (e) {
@@ -43,13 +44,13 @@ async function publish (pluginConfig, publishConfig) {
   nextSnapshotVersion[2] += 1
 
   // make a commit bumping to snapshot version
-  await commitVersionInPomXml(`${nextSnapshotVersion.join('.')}-SNAPSHOT`, logger)
+  await commitVersionInPomXml(`${nextSnapshotVersion.join('.')}-SNAPSHOT`)
 }
 
 /**
  * Configure git settings.  Copied from this guide: https://gist.github.com/willprice/e07efd73fb7f13f917ea
  */
-async function configureGit (repositoryUrl, logger) {
+async function configureGit (repositoryUrl) {
   await exec(
     'git',
     ['config', '--global', 'user.email', '"travis@travis-ci.org"']
@@ -87,12 +88,12 @@ async function exec (args) {
 /**
  * Change the pom.xml file, commit the change and then push it to the repo
  */
-async function commitVersionInPomXml (versionStr, logger) {
+async function commitVersionInPomXml (versionStr) {
   let pomLines
   try {
     pomLines = (await fs.readFile('./pom.xml', 'utf8')).split('\n')
   } catch (e) {
-    logger.error(e)
+    debug(e)
     throw new Error('Error reading pom.xml')
   }
 
@@ -113,14 +114,14 @@ async function commitVersionInPomXml (versionStr, logger) {
     ? `Prepare next development iteration ${versionStr} [ci skip]`
     : `${versionStr} [ci skip]`
 
-  logger.log('adding pom.xml to a commmit')
+  debug('adding pom.xml to a commmit')
   await exec('git', ['add', 'pom.xml'])
 
-  logger.log('committing changes')
+  debug('committing changes')
   await exec('git', ['commit', '-m', commitMessage])
   process.stdout.write('\n')
 
-  // logger.log('pushing changes')
+  // debug('pushing changes')
   // await exec('git', ['push'])
   // process.stdout.write('\n')
 }

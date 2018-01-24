@@ -1,3 +1,4 @@
+const debug = require('debug')('maven-semantic-release:get-last-release')
 const fs = require('fs-extra')
 const got = require('got')
 const getVersionHead = require('@semantic-release/npm/lib/get-version-head')
@@ -7,7 +8,7 @@ const xml2js = require('xml2js-es6-promise')
 /**
  * Get the last release of the maven repository
  */
-module.exports = async function getLastRelease (cfg, {logger}) {
+module.exports = async function getLastRelease (cfg) {
   // get package name from pom.xml
   const pomXmlFilePath = './pom.xml'
   const stats = await fs.stat('./pom.xml')
@@ -38,7 +39,7 @@ module.exports = async function getLastRelease (cfg, {logger}) {
   const searchTerm = `${pomXml.project.groupId[0]}.${pomXml.project.artifactId[0]}`
 
   // get the last semver version from published repo
-  logger.log('searching maven for term %s', searchTerm)
+  debug('searching maven for term %s', searchTerm)
   const mavenJson = await got(
     `https://search.maven.org/solrsearch/select?q=${searchTerm}&rows=20&wt=json`,
     { json: true }
@@ -51,7 +52,7 @@ module.exports = async function getLastRelease (cfg, {logger}) {
     !mavenJson.body.response.docs ||
     mavenJson.body.response.docs.length === 0
   ) {
-    logger.log('No version found of package %s found on %s', searchTerm, 'maven central')
+    debug('No version found of package %s found on %s', searchTerm, 'maven central')
     return
   }
 
