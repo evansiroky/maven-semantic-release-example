@@ -51,6 +51,7 @@ async function publish (pluginConfig, publishConfig) {
  * Configure git settings.  Copied from this guide: https://gist.github.com/willprice/e07efd73fb7f13f917ea
  */
 async function configureGit (repositoryUrl) {
+  debug('configuring git')
   await exec(
     'git',
     ['config', '--global', 'user.email', '"travis@travis-ci.org"']
@@ -59,6 +60,8 @@ async function configureGit (repositoryUrl) {
     'git',
     ['config', '--global', 'user.name', '"Travis CI"']
   )
+
+  debug('adding remote')
   try {
     await exec(
       'git',
@@ -66,7 +69,10 @@ async function configureGit (repositoryUrl) {
         'remote',
         'add',
         'origin',
-        repositoryUrl.replace('https://github', `https://${process.env.GH_TOKEN}@github`)
+        repositoryUrl.replace('https://github', `https://${process.env.GH_TOKEN}@github`),
+        '>',
+        '/dev/null',
+        '2>&1'
       ]
     )
   } catch (e) {
@@ -122,6 +128,6 @@ async function commitVersionInPomXml (versionStr) {
   process.stdout.write('\n')
 
   debug('pushing changes')
-  await exec('git', ['push'])
+  await exec('git', ['push', 'origin', 'master'])
   process.stdout.write('\n')
 }
