@@ -1,7 +1,6 @@
 const debug = require('debug')('maven-semantic-release:publish')
 const execa = require('execa')
 const fs = require('fs-extra')
-const getStream = require('get-stream')
 const semanticGithub = require('@semantic-release/github')
 const {gitHead: getGitHead} = require('semantic-release/lib/git')
 
@@ -24,14 +23,9 @@ async function publish (pluginConfig, publishConfig) {
   await commitVersionInPomXml(nextRelease.version)
 
   debug('Deploying version %s with maven', nextRelease.version)
-  let e
   try {
     await exec('mvn', ['deploy', '--settings', 'maven-settings.xml'])
   } catch (e) {
-    debug(e)
-  }
-
-  if (e) {
     throw new Error('failed to deploy to maven')
   }
 
@@ -85,10 +79,10 @@ async function configureGit (repositoryUrl) {
 /**
  * Execute while streaming to stdout in realtime
  */
-async function exec () {
-  const stream = execa(...arguments).stdout
-  stream.pipe(process.stdout)
-  return getStream(stream)
+function exec () {
+  const childProcess = execa(...arguments)
+  childProcess.stdout.pipe(process.stdout)
+  return childProcess
 }
 
 /**
