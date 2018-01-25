@@ -55,25 +55,7 @@ async function configureGit (repositoryUrl) {
     ['config', '--global', 'user.name', '"Travis CI"']
   )
 
-  debug('adding remote')
-  try {
-    await exec(
-      'git',
-      [
-        'remote',
-        'add',
-        'origin',
-        repositoryUrl.replace('https://github', `https://${process.env.GH_TOKEN}@github`),
-        '>',
-        '/dev/null',
-        '2>&1'
-      ]
-    )
-  } catch (e) {
-    if (!(e.message.indexOf('remote origin already exists') > -1)) {
-      throw e
-    }
-  }
+  // no need to add remote as it should already be set in travis
 }
 
 /**
