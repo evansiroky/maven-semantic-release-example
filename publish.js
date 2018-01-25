@@ -79,8 +79,8 @@ async function configureGit (repositoryUrl) {
 /**
  * Execute while streaming to stdout in realtime
  */
-async function exec (args) {
-  const stream = execa(...args).stdout
+async function exec () {
+  const stream = execa(...arguments).stdout
   stream.pipe(process.stdout)
   return getStream(stream)
 }
