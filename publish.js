@@ -104,6 +104,6 @@ async function commitVersionInPomXml (versionStr) {
   process.stdout.write('\n')
 
   debug('pushing changes')
-  await exec('sh', ['push.sh'])
+  await exec('bash', ['push.sh'])
   process.stdout.write('\n')
 }
