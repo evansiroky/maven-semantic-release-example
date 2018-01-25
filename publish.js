@@ -1,7 +1,6 @@
 const debug = require('debug')('maven-semantic-release:publish')
 const execa = require('execa')
 const fs = require('fs-extra')
-const getStream = require('get-stream')
 const semanticGithub = require('@semantic-release/github')
 const {gitHead: getGitHead} = require('semantic-release/lib/git')
 
@@ -24,14 +23,9 @@ async function publish (pluginConfig, publishConfig) {
   await commitVersionInPomXml(nextRelease.version)
 
   debug('Deploying version %s with maven', nextRelease.version)
-  let e
   try {
     await exec('mvn', ['deploy', '--settings', 'maven-settings.xml'])
   } catch (e) {
-    debug(e)
-  }
-
-  if (e) {
     throw new Error('failed to deploy to maven')
   }
 
@@ -51,6 +45,7 @@ async function publish (pluginConfig, publishConfig) {
  * Configure git settings.  Copied from this guide: https://gist.github.com/willprice/e07efd73fb7f13f917ea
  */
 async function configureGit (repositoryUrl) {
+  debug('configuring git')
   await exec(
     'git',
     ['config', '--global', 'user.email', '"travis@travis-ci.org"']
@@ -59,6 +54,8 @@ async function configureGit (repositoryUrl) {
     'git',
     ['config', '--global', 'user.name', '"Travis CI"']
   )
+
+  debug('adding remote')
   try {
     await exec(
       'git',
@@ -66,7 +63,10 @@ async function configureGit (repositoryUrl) {
         'remote',
         'add',
         'origin',
-        repositoryUrl.replace('https://github', `https://${process.env.GH_TOKEN}@github`)
+        repositoryUrl.replace('https://github', `https://${process.env.GH_TOKEN}@github`),
+        '>',
+        '/dev/null',
+        '2>&1'
       ]
     )
   } catch (e) {
@@ -79,10 +79,10 @@ async function configureGit (repositoryUrl) {
 /**
  * Execute while streaming to stdout in realtime
  */
-async function exec () {
-  const stream = execa(...arguments).stdout
-  stream.pipe(process.stdout)
-  return getStream(stream)
+function exec () {
+  const childProcess = execa(...arguments)
+  childProcess.stdout.pipe(process.stdout)
+  return childProcess
 }
 
 /**
@@ -122,6 +122,6 @@ async function commitVersionInPomXml (versionStr) {
   process.stdout.write('\n')
 
   debug('pushing changes')
-  await exec('git', ['push'])
+  await exec('git', ['push', 'origin', 'master'])
   process.stdout.write('\n')
 }
