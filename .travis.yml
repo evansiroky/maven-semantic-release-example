@@ -22,6 +22,3 @@ before_install: |
     openssl aes-256-cbc -K $encrypted_319571283a54_key -iv $encrypted_319571283a54_iv -in maven-artifact-signing-key.asc.enc -out maven-artifact-signing-key.asc -d
     gpg --import --batch maven-artifact-signing-key.asc
   fi
-env:
-  global:
-    secure: dQj7HsuzpmRAH4cfZTh5kIYQp0zUbqwz8TPTPtGskBg+BAOBI75n8ZAg81QGSz94u6Adx0iwof5BRPywsnWFjO0kNsPKC7Zm35Smdbv+Q0pazLP6psjhSQruWZ5IUsrBU7a+/oHW7tjlcIX/OBf2EWNEB0Uj9VJ/wrAc28k9bQ/F/qqfe+mBJabOXkzwXsugEXWImJi4r6hrhozOty+heEB732fHObO6E8lfNvYy/wh5XJRU6kHZsQqIroEho6VL7v4/Bcyfn/qKDVxb+0AaoMXYDDGA5RKHhb5Ib/MRnpjetQ1WCZQhYjajwEKzBN6+cvYHivNjNIxKLPRurmglQVccAz9/WpLjhTryDoymKzJhKB0fMR8TTNulR0zwzwGx3J0z4olT2sLDMcg4oFgiEZTCaxo1iTU65MRI5UbVy5oswztYMXrGhkUPggzBdzjtIFnxHKI8DEv44FwXTFbIlYGPccOw9LGHIs32Y7d+7IMHYU9KE1jC4gtblN/8S22Jn8ysGoExu1iymHGZyuAYT4PQ/ALAa3Ny0Ojb+iaKsUIe4Xn0yqQX/ufNimSUB0lb9N5jl5a16cZhdTZUdwVxq1h4LWIaLdQj6xuGr7oLu5huuldp58fBDHkVCW+RPZmqaQ8/4i+VhSqOlgcfEuo4LB/doGXi7SUKLhysHRL6j0g=
