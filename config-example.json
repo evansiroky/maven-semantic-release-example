@@ -6,5 +6,6 @@
   "OSSRH_JIRA_USERNAME": "test",
   "OSSRH_JIRA_PASSWORD": "test",
   "TRAVIS": "true",
-  "TRAVIS_BRANCH": "dev"
+  "TRAVIS_BRANCH": "dev",
+  "TRAVIS_REPO_SLUG": "evansiroky/maven-semantic-release-example.git"
 }
