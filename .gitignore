@@ -20,3 +20,4 @@ node_modules/
 
 ### secrets
 config.json
+maven-artifact-signing-key.asc
