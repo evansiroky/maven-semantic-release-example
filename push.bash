@@ -1,4 +1,5 @@
 #!/bin/bash
+# copied and modified from https://gist.github.com/ddgenome/f3a60fe4c2af0cbe758556d982fbeea9
 
 if [[ $GITHUB_TOKEN ]]; then
     remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
@@ -8,8 +9,7 @@ if [[ $GH_TOKEN ]]; then
 fi
 
 echo "bash pushing"
-echo "git push $remote $TRAVIS_BRANCH"
-if ! git push "$remote" "$TRAVIS_BRANCH" ; then
+if ! git push --quiet --follow-tags "$remote" "$TRAVIS_BRANCH" > /dev/null 2>&1; then
     err "failed to push git changes"
     return 1
 fi

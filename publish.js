@@ -46,6 +46,12 @@ async function publish (pluginConfig, publishConfig) {
  */
 async function configureGit (repositoryUrl) {
   debug('configuring git')
+
+  // run bash script to make sure we're on the master branch and not in detached head mode
+  debug('pushing changes')
+  await exec('bash', ['checkout-branch.bash'])
+  process.stdout.write('\n')
+
   await exec(
     'git',
     ['config', '--global', 'user.email', '"travis@travis-ci.org"']
@@ -104,6 +110,6 @@ async function commitVersionInPomXml (versionStr) {
   process.stdout.write('\n')
 
   debug('pushing changes')
-  await exec('bash', ['push.sh'])
+  await exec('bash', ['push.bash'])
   process.stdout.write('\n')
 }
