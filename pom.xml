@@ -4,7 +4,7 @@
   <groupId>com.github.evansiroky</groupId>
   <artifactId>maven-semantic-release-example</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.1-SNAPSHOT</version> <!-- semantic-release-version-line -->
+  <version>1.0.1</version> <!-- semantic-release-version-line -->
   <name>maven-semantic-release-example</name>
   <description>Example project to auto-deploy maven projects</description>
   <url>https://github.com/evansiroky/maven-semantic-release-example</url>
