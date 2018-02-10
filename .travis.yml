@@ -1,13 +1,10 @@
 # run a node.js script to use code from semantic-release
 after_success:
-  - node release-cli.js --debug
+  - yarn global add @conveyal/maven-semantic-release && maven-semantic-release --debug
 cache:
   directories:
     - $HOME/.m2/repository
-    - $HOME/.yarn-cache
-# yarn is used to run to release script which runs part of the node.js semantic-release library
-install:
-  - yarn
+install: true
 jdk:
   - oraclejdk8
 language: java
