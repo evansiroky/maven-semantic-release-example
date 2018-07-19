@@ -4,6 +4,7 @@ after_success:
 cache:
   directories:
     - $HOME/.m2/repository
+    - $HOME/.yarn-cache
 install: true
 jdk:
   - oraclejdk8
