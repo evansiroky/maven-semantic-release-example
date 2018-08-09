@@ -1,5 +1,6 @@
 # run a node.js script to use code from semantic-release
 after_success:
+  - pip install --user awscli && export PATH=$PATH:~/.local/bin/
   - yarn global add @conveyal/maven-semantic-release && maven-semantic-release --debug --deploy-to-s3-bucket maven-semantic-release-example-builds
 cache:
   directories:
