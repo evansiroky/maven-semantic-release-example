@@ -128,7 +128,28 @@
       <plugin>
         <!-- This plugin is optional for projects deployed with maven-semantic-release
           This is mainly used to create a shaded jar with a specific version id.
-          In the workflow at Conveyal, we deploy these generated jar files to s3 -->
+          In the workflow at Conveyal, we deploy these generated jar files to s3.
+          Note: this works in conjunction with the maven-shade-plugin -->
+        <groupId>pl.project13.maven</groupId>
+        <artifactId>git-commit-id-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>revision</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <!-- This plugin is optional for projects deployed with maven-semantic-release
+          This is mainly used to create a shaded jar with a specific version id.
+          In the workflow at Conveyal, we deploy these generated jar files to s3.
+          Note: this works in conjunction with the git-commit-id-plugin -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <version>2.2</version>
