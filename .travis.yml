@@ -7,8 +7,8 @@ cache:
     - $HOME/.m2
     - $HOME/.cache/yarn
     - $HOME/.cache/pip
+# install dependencies used in after_success here because they don't get cached if called in after_success
 before_install:
-  # install dependencies used in after_success here because they don't get cached if called in after_success
   - pip install --user awscli && export PATH=$PATH:~/.local/bin/
   - yarn global add @conveyal/maven-semantic-release semantic-release
 install: true
