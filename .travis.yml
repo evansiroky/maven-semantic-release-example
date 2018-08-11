@@ -2,15 +2,21 @@
 after_success:
   - semantic-release --prepare @conveyal/maven-semantic-release --publish @semantic-release/github,@conveyal/maven-semantic-release --verify-conditions @semantic-release/github --verify-release @conveyal/maven-semantic-release
   - aws s3 cp --recursive --exclude "*" --include "v*.jar" /home/travis/build/evansiroky/maven-semantic-release-example/target s3://maven-semantic-release-example-builds
+before_install: |
+  # only install signing keys under the same circumstances we do a mvn deploy later
+  if [[ "$TRAVIS_PULL_REQUEST" = false ]] && [[ "$TRAVIS_BRANCH" = master ]]; then
+    openssl aes-256-cbc -K $encrypted_319571283a54_key -iv $encrypted_319571283a54_iv -in maven-artifact-signing-key.asc.enc -out maven-artifact-signing-key.asc -d
+    gpg --import --batch maven-artifact-signing-key.asc
+  fi
+# install dependencies used in after_success here because they don't get cached if called in after_success
+before_script:
+  - pip install --user awscli && export PATH=$PATH:~/.local/bin/
+  - yarn global add @conveyal/maven-semantic-release semantic-release
 cache:
   directories:
     - $HOME/.m2
     - $HOME/.cache/yarn
     - $HOME/.cache/pip
-# install dependencies used in after_success here because they don't get cached if called in after_success
-before_script:
-  - pip install --user awscli && export PATH=$PATH:~/.local/bin/
-  - yarn global add @conveyal/maven-semantic-release semantic-release
 install: true
 jdk:
   - oraclejdk8
@@ -20,9 +26,3 @@ notifications:
 script:
   - mvn package
 sudo: false
-before_install: |
-  # only install signing keys under the same circumstances we do a mvn deploy later
-  if [[ "$TRAVIS_PULL_REQUEST" = false ]] && [[ "$TRAVIS_BRANCH" = master ]]; then
-    openssl aes-256-cbc -K $encrypted_319571283a54_key -iv $encrypted_319571283a54_iv -in maven-artifact-signing-key.asc.enc -out maven-artifact-signing-key.asc -d
-    gpg --import --batch maven-artifact-signing-key.asc
-  fi
