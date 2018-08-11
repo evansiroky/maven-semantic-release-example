@@ -1,13 +1,16 @@
 # run a node.js script to use code from semantic-release
 after_success:
-  - pip install --user awscli && export PATH=$PATH:~/.local/bin/
-  - yarn global add @conveyal/maven-semantic-release semantic-release && semantic-release --prepare @conveyal/maven-semantic-release --publish @semantic-release/github,@conveyal/maven-semantic-release --verify-conditions @semantic-release/github --verify-release @conveyal/maven-semantic-release
+  - semantic-release --prepare @conveyal/maven-semantic-release --publish @semantic-release/github,@conveyal/maven-semantic-release --verify-conditions @semantic-release/github --verify-release @conveyal/maven-semantic-release
   - aws s3 cp --recursive --exclude "*" --include "v*.jar" /home/travis/build/evansiroky/maven-semantic-release-example/target s3://maven-semantic-release-example-builds
 cache:
   directories:
     - $HOME/.m2
     - $HOME/.cache/yarn
     - $HOME/.cache/pip
+before_install:
+  # install dependencies used in after_success here because they don't get cached if called in after_success
+  - pip install --user awscli && export PATH=$PATH:~/.local/bin/
+  - yarn global add @conveyal/maven-semantic-release semantic-release
 install: true
 jdk:
   - oraclejdk8
