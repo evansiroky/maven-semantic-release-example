@@ -1,8 +1,8 @@
 # run a node.js script to use code from semantic-release
 after_success:
   - pip install --user awscli && export PATH=$PATH:~/.local/bin/
-  - aws s3 cp --recursive --exclude "*" --include "v*.jar" /home/travis/build/evansiroky/maven-semantic-release-example/target s3://maven-semantic-release-example-builds
   - yarn global add @conveyal/maven-semantic-release semantic-release && semantic-release --prepare @conveyal/maven-semantic-release --publish @semantic-release/github,@conveyal/maven-semantic-release --verify-conditions @semantic-release/github --verify-release @conveyal/maven-semantic-release
+  - aws s3 cp --recursive --exclude "*" --include "v*.jar" /home/travis/build/evansiroky/maven-semantic-release-example/target s3://maven-semantic-release-example-builds
 cache:
   directories:
     - $HOME/.m2/repository
