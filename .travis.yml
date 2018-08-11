@@ -5,8 +5,9 @@ after_success:
   - aws s3 cp --recursive --exclude "*" --include "v*.jar" /home/travis/build/evansiroky/maven-semantic-release-example/target s3://maven-semantic-release-example-builds
 cache:
   directories:
-    - $HOME/.m2/repository
-    - $HOME/.yarn-cache
+    - $HOME/.m2
+    - $HOME/.cache/yarn
+    - $HOME/.cache/pip
 install: true
 jdk:
   - oraclejdk8
