@@ -142,6 +142,9 @@
         </executions>
         <configuration>
           <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+          <gitDescribe>
+            <tags>false</tags>
+          </gitDescribe>
         </configuration>
       </plugin>
 
