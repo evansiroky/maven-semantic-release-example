@@ -229,10 +229,12 @@
     </plugins>
   </build>
   <dependencies>
+    <!-- JUnit is a Java testing framework.
+      It is optional in the workflow of deploying with maven-semantic-release. -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
