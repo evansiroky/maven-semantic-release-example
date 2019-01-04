@@ -1,6 +1,6 @@
 # run a node.js script to use code from semantic-release
 after_success:
-  - semantic-release --prepare @conveyal/maven-semantic-release --publish @semantic-release/github,@conveyal/maven-semantic-release --verify-conditions @semantic-release/github,@conveyal/maven-semantic-release --verify-release @conveyal/maven-semantic-release --use-conveyal-workflow --dev-branch=dev --skip-maven-deploy
+  - semantic-release --prepare @conveyal/maven-semantic-release --publish @semantic-release/github,@conveyal/maven-semantic-release --verify-conditions @semantic-release/github,@conveyal/maven-semantic-release --verify-release @conveyal/maven-semantic-release --use-conveyal-workflow --dev-branch=dev
   # The following line is optional in maven-semantic-release projects.
   # It is included here to test the uploading of jar files to s3 which is part of conveyal workflow.
   - aws s3 cp --recursive --exclude "*" --include "v*.jar" /home/travis/build/evansiroky/maven-semantic-release-example/target s3://maven-semantic-release-example-builds
@@ -17,7 +17,7 @@ before_install: |
   fi
 # install dependencies used in after_success here because they don't get cached if called in after_success
 before_script:
-  - yarn global add https://github.com/conveyal/maven-semantic-release.git#74b7a7e8f6e16ffc6f7d6f251156ba95931c0740 semantic-release
+  - yarn global add @conveyal/maven-semantic-release semantic-release
   # The following line is optional in maven-semantic-release projects.
   # It is included here to install the aws command line tool.
   - pip install --user awscli && export PATH=$PATH:~/.local/bin/
