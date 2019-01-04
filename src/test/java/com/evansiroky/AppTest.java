@@ -1,38 +1,37 @@
 package com.evansiroky;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
+import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertThat;
 
 /**
- * Unit test for simple App.
+ * Test for the app.
  */
-public class AppTest 
-    extends TestCase
-{
+public class AppTest {
+    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+
     /**
-     * Create the test case
+     * setup a stream to capture the output from the program
+     */
+    @Before
+    public void setUpStreams() {
+        System.setOut(new PrintStream(outContent));
+    }
+
+    /**
+     * Make sure that "Hello World!" string can be printed.
      *
-     * @param testName name of the test case
+     * @throws Exception
      */
-    public AppTest( String testName )
-    {
-        super( testName );
-    }
-
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
-
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
+    @Test
+    public void canPrintHelp() throws Exception {
+        String[] args = {"-help"};
+        App.main(args);
+        assertThat(outContent.toString(), containsString("Hello World!"));
     }
 }
