@@ -30,7 +30,7 @@ cache:
     - $HOME/.cache/pip
 install: true
 jdk:
-  - oraclejdk8
+  - openjdk11
 language: java
 notifications:
   email: false
