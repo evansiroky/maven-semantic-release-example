@@ -76,6 +76,7 @@
         <version>2.10.4</version>
         <configuration>
           <source>11</source>
+          <detectJavaApiLink>false</detectJavaApiLink>
           <!-- Turn off Java 8 strict Javadoc checking -->
           <additionalparam>-Xdoclint:none</additionalparam>
           <tags>
