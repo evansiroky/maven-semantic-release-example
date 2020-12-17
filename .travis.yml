@@ -17,7 +17,7 @@ before_install: |
   fi
 # install dependencies used in after_success here because they don't get cached if called in after_success
 before_script:
-  - yarn global add https://github.com/conveyal/maven-semantic-release.git#e5551beb4ec266bb520ae5ff155bc0d04acf8f05 semantic-release@15
+  - yarn global add https://github.com/conveyal/maven-semantic-release.git#f4bcd1b79bec7cfd1fa4a1b114d2a977e4271cd2 semantic-release
   # The following line is optional in maven-semantic-release projects.
   # It is included here to install the aws command line tool.
   - pip install --user awscli && export PATH=$PATH:~/.local/bin/
